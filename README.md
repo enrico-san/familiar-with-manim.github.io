@@ -1,0 +1,1 @@
+Familiar with [Manim](https://github.com/ManimCommunity/manim) community edition
