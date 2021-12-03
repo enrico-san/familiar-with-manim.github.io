@@ -1,11 +1,9 @@
 from manim import *
 import addons
 
-WAIT_BETWEEN = 2
-LABEL_OFFSET = 0.15*UP
-
 class Where(Scene, addons.Say):
     def construct(self):
+        LABEL_OFFSET = 0.15*UP
         self.wait()
         
         spots = ['ORIGIN', 'LEFT', 'UP', 'RIGHT', 'DOWN', 'UL', 'UR', 'DL', 'DR']
@@ -13,7 +11,7 @@ class Where(Scene, addons.Say):
         self.comment = Text(' ')
         self.add(self.comment)
 
-        mobs = {}
+        mobs = {}  # 'spot': {text, dot}
         for spot in spots:
             place = globals()[spot]
             text = Text(spot, font_size=10, color=BLACK).move_to(place + LABEL_OFFSET)
@@ -38,7 +36,7 @@ class Where(Scene, addons.Say):
 
                 if first:
                     first = False
-                    self.say(f"""
+                    self.play(self.addon_write(f"""
                 from manim import *
 
                 class MyPresentation(Scene):
@@ -46,10 +44,10 @@ class Where(Scene, addons.Say):
                         dot = Dot()
                         self.add(dot)
                         dot.move_to({spot})
-                        self.wait(3)""")
+                        self.wait(3)"""))
                 else:
-                    self.say(f"dot.move_to({spot})")
-                self.wait(WAIT_BETWEEN)
+                    self.play(self.addon_write(f"dot.move_to({spot})"))
+                self.wait(2)
 
             last_text.set_color(GRAY)
             last_dot.set_color(GRAY)
@@ -59,18 +57,36 @@ class Where(Scene, addons.Say):
             t.set_color(WHITE)
             dot.set_color(WHITE)
 
-            self.say(f"self.play( dot.animate.move_to(LEFT * 3) )")
-            self.play(dot.animate.move_to(LEFT * 3), run_time=2)
+            self.play(
+                self.addon_write(f"self.play( dot.animate.move_to(LEFT * 3) )"),
+                dot.animate.move_to(LEFT * 3), run_time=2)
             self.wait(2)
 
-            self.say(f"self.play( dot.animate.move_to(LEFT * -4) )")
-            self.play(dot.animate.move_to(LEFT * -4), run_time=2)
+            self.play(
+                self.addon_write(f"self.play( dot.animate.move_to(LEFT * -4) )"),
+                dot.animate.move_to(LEFT * -4), run_time=2)
             self.wait(2)
 
-            self.say(f"""
-                self.play(
-                    dot.animate.move_to(dot.get_center() + UL * 2)
-                )""")
-            self.play(dot.animate.move_to(dot.get_center() + UL * 2), run_time=2)
+            self.play(
+                self.addon_write(f"""
+                    self.play(
+                        dot.animate.move_to(dot.get_center() + UL * 2)
+                    )"""),
+                dot.animate.move_to(dot.get_center() + UL * 2),
+                run_time=2)
             self.wait(2)
 
+            t, dot2 = mobs['LEFT'].values()
+            dot2.set_color(WHITE)
+            self.play(
+                self.addon_write(f"""
+                    self.play(
+                        dot.animate.move_to(dot.get_center() + DOWN),
+                        dot2.animate.move_to(dot2.get_center() + DOWN),
+                        run_time=4
+                    )"""),
+                dot.animate.move_to(dot.get_center() + DOWN),
+                dot2.animate.move_to(dot2.get_center() + DOWN),
+                run_time=4
+            )
+            self.wait(2)
